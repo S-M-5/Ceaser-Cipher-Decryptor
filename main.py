@@ -2,6 +2,8 @@ from english_words import get_english_words_set
 from wordfreq import top_n_list
 from nltk.corpus import words
 import nltk
+import os
+import string
 nltk.download('words')
 
 
@@ -20,7 +22,6 @@ for index,char in enumerate(alphabet): # Storing alphabet into a char:index and 
     index_to_char[index] = char
 
 def decrypt(file):
-    correct_keys = []
     final_text = ''
     with open(file, "r") as file:
         while True:
@@ -36,14 +37,14 @@ def decrypt(file):
             first_three_words = list(" ".join(file_chars[1:4]))
             for key in range(len(alphabet)): # Loop through the first 2 words of the line and checks if one of them is in the English dictionary
                 for char in first_three_words:
+                    char = char.lower()
                     if char not in char_to_index:
                         decrypted_text += char
                         continue
                     dec = (char_to_index[char] - key) % len(alphabet)
                     decrypted_text += index_to_char[dec]
-                word1, word2, word3 = decrypted_text.strip().split()
+                word1, word2, word3 = decrypted_text.strip().strip(string.punctuation).split()
                 if (word1 in all_words) and (word2 in all_words) and (word3 in all_words):
-                    correct_keys.append(key)
                     break
                 else:
                     decrypted_text = ''
@@ -54,7 +55,7 @@ def decrypt(file):
 
             decrypted_text = ''
             decrypted_chars = []
-            words_to_chars = list(file_line)
+            words_to_chars = list(file_line.lower())
             for c in words_to_chars:        # Decrypts the rest of the line using the correct key
                 if c not in char_to_index:
                     decrypted_chars.append(c)
@@ -63,13 +64,32 @@ def decrypt(file):
                 decrypted_chars.append(index_to_char[c])
             for i in decrypted_chars:
                 decrypted_text += i
-            final_text += decrypted_text+"Key: "+str(key)+"\n"
-        print(final_text)
+            final_text += '\n'+decrypted_text+"\nKey: "+str(key)+"\n\n"
 
-decrypt('file-e-3.txt') # Problem with file 3
+        i = 1
+        while os.path.exists(f"decrypted-file-{i}.txt"): # Creating a file name based on previously created files
+            i+=1
+        dec_file = f'decrypted-file-{i}.txt'
+        with open(dec_file, 'w') as file:
+            file.write(final_text)
+        print(final_text+ f"\nFile successfully saved to {os.path.abspath(dec_file)}")
 
 
+def display(file):
+    with open(file, "r") as file:
+        print(file.read())
 
 
-
+if __name__ == '__main__':
+    try:
+        file = input("Enter file name: ")+".txt"
+        option = input("Decrypt and find keys or Print encoded file? (d/p):")
+        if option.lower() == "d":
+            decrypt(file)
+        elif option.lower() == "p":
+            display(file)
+        else:
+            print("\nInvalid option.\nChoose 'd' to decrypt, or 'p' to print encoded file")
+    except FileNotFoundError:
+        print("\nFile not found. Please try again.")
 
