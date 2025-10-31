@@ -1,18 +1,20 @@
 from english_words import get_english_words_set
 from wordfreq import top_n_list
-from nltk.corpus import words
+from nltk.corpus import words , names
 import nltk
 import os
 import string
 nltk.download('words')
+nltk.download('names')
 
 
 english1 = get_english_words_set(['web2'], lower = True)
 english2 = set(top_n_list('en' , 10**9))
 english3 = set(words.words())
+english4 = set(names.words())
 
 
-all_words = english1 | english2 | english3   # Merge all 3 English dictionary sources
+all_words = english1 | english2 | english3 | english4  # Merge all 4 English dictionary sources
 alphabet = "abcdefghijklmnopqrstuvwxyz0123456789,./?!"
 char_to_index = {}
 index_to_char = {}
