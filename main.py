@@ -28,7 +28,7 @@ def decrypt(file):
     with open(file, "r") as file:
         while True:
             file_line = file.readline()
-            file_chars = file_line.split()
+            file_words = file_line.split()
             if not file_line: # Check if it's the last line of the file
                 break
             if not file_line.strip(): # Check if there's a line after an empty line
@@ -36,8 +36,8 @@ def decrypt(file):
 
 
             decrypted_text = ''
-            first_three_words = list(" ".join(file_chars[1:4]))
-            for key in range(len(alphabet)): # Loop through the first 2 words of the line and checks if one of them is in the English dictionary
+            first_three_words = list(" ".join(file_words[1:4]))
+            for key in range(len(alphabet)): # Loop through the first 3 words of the line and checks if one of them is in the English dictionary
                 for char in first_three_words:
                     char = char.lower()
                     if char not in char_to_index:
@@ -45,7 +45,7 @@ def decrypt(file):
                         continue
                     dec = (char_to_index[char] - key) % len(alphabet)
                     decrypted_text += index_to_char[dec]
-                word1, word2, word3 = decrypted_text.strip().strip(string.punctuation).split()
+                word1, word2, word3 = decrypted_text.strip(string.punctuation + string.whitespace).split()
                 if (word1 in all_words) and (word2 in all_words) and (word3 in all_words):
                     break
                 else:
@@ -85,7 +85,7 @@ def display(file):
 if __name__ == '__main__':
     try:
         file = input("Enter file name: ")+".txt"
-        option = input("Decrypt and find keys or Print encoded file? (d/p):")
+        option = input("Decrypt and find keys or Print encoded file? (d/p): ")
         if option.lower() == "d":
             decrypt(file)
         elif option.lower() == "p":
